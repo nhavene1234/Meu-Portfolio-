@@ -1,0 +1,359 @@
+:root {
+  --cor-destaque: #0d6efd;
+}
+
+main {
+  min-height: 70vh;
+}
+
+.hero {
+  padding: 6rem 0;
+}
+
+/* Foto de perfil circular */
+.foto-perfil {
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 50%;
+  border: 6px solid #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.foto-perfil-pequena {
+  width: 200px;
+  height: 200px;
+}
+
+@media (max-width: 576px) {
+  .foto-perfil {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* Cartões de projetos */
+.card-projeto img {
+  height: 200px;
+  object-fit: cover;
+}
+
+/* Cartões de tecnologias */
+.tech-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.2rem 0.5rem;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+}
+
+.tech-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.tech-icone {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.tech-nome {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Estilos Adicionados para a Página de Contactos (Seguindo a identidade atual)
+   ========================================================================== */
+
+.contacto-secao {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #333;
+}
+
+.contacto-intro {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.contacto-intro h1 {
+  color: var(--cor-destaque);
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+.contacto-intro p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+  color: #555;
+}
+
+/* Grelha de Retângulos de Informação (Cards) */
+.contacto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.contacto-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.contacto-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border-color: var(--cor-destaque);
+}
+
+.contacto-card-icone {
+  font-size: 2rem;
+  color: var(--cor-destaque);
+}
+
+.contacto-card-titulo {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.contacto-card-valor {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Área do Formulário */
+.formulario-container {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 1rem;
+  padding: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 700px;
+  margin: 0 auto 5rem auto;
+}
+
+.formulario-container h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+  color: #222;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.contador-palavras {
+  font-size: 0.85rem;
+  color: #666;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+.btn-submeter {
+  display: inline-block;
+  width: 100%;
+  padding: 0.85rem;
+  background-color: var(--cor-destaque);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-submeter:hover {
+  background-color: #0b5ed7;
+}
+
+/* Alertas de Feedback */
+.alerta {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.alerta-sucesso {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+.alerta-erro {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+/* ==========================================================================
+   RODAPÉ (FOOTER) - Alinhamento Perfeito em Grelha Flexível
+   ========================================================================== */
+
+.site-footer {
+  background-color: #1b1a1a;
+  border-top: 1px solid #e9ecef;
+  padding: 4rem 1.5rem 2rem 1.5rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Alinha o perfil e as três colunas na mesma linha horizontal */
+.footer-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+/* Coluna do Nome/Perfil (Ocupa mais espaço para equilibrar o texto longo) */
+.footer-perfil {
+  flex: 2 1 350px; 
+}
+
+.footer-perfil h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: #fffafa;
+}
+
+.footer-perfil p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* COLUNAS EM GRELHA: Links Rápidos, Redes Sociais e Contactos (Todas iguais) */
+.footer-coluna {
+  flex: 1 1 180px; /* Garante que todas partilham a mesma largura na linha */
+}
+
+.footer-coluna h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1.25rem 0;
+  color: #ffffff;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+
+.footer-links a:hover {
+  color: var(--cor-destaque);
+}
+
+/* Formatação do Bloco de Contactos dentro da Grelha */
+.footer-contacto-info {
+  font-size: 0.95rem;
+  color: #ffffff;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.footer-contacto-info p {
+  margin: 0 0 0.75rem 0;
+}
+
+.footer-contacto-info p:last-child {
+  margin-bottom: 0;
+}
+
+/* Linha inferior de Copyright */
+.footer-bottom {
+  max-width: 1100px;
+  margin: 3rem auto 0 auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e9ecef;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .footer-perfil, 
+  .footer-coluna {
+    flex: 1 1 auto;
+  }
+}

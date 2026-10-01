@@ -1,0 +1,5 @@
+# Esconder as configurações e credenciais de administrador locais
+includes/config.php
+
+# Esconder uploads locais feitos durante testes
+uploads/
