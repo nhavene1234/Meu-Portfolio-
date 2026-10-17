@@ -16,6 +16,8 @@ $tecnologias = [
     ],
     'Bases de dados' => [
         ['MySQL',       'devicon-mysql-plain colored'],
+        ['MariaDB',     'devicon-mariadb-original colored'],
+        ['PostgreSQL',  'devicon-postgresql-plain colored'],
         ['H2 (testes)', null],
     ],
     'Ferramentas' => [
