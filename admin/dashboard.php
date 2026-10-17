@@ -5,6 +5,8 @@ require_once '../includes/csrf.php';
 
 $projetos = $pdo->query("SELECT id, titulo, tecnologias, destaque, criado_em
                          FROM projetos ORDER BY criado_em DESC")->fetchAll();
+
+$naoLidas = (int)$pdo->query("SELECT COUNT(*) FROM mensagens WHERE lida = 0")->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="pt">
@@ -19,7 +21,13 @@ $projetos = $pdo->query("SELECT id, titulo, tecnologias, destaque, criado_em
 <nav class="navbar navbar-dark bg-dark">
   <div class="container">
     <span class="navbar-brand">Painel · <?= htmlspecialchars($_SESSION['admin_nome']) ?></span>
-    <div>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="mensagens.php" class="btn btn-sm btn-outline-light position-relative">
+        Mensagens
+        <?php if ($naoLidas > 0): ?>
+          <span class="badge bg-danger ms-1"><?= $naoLidas ?></span>
+        <?php endif; ?>
+      </a>
       <a href="<?= SITE_URL ?>/index.php" class="btn btn-sm btn-outline-light" target="_blank">Ver site</a>
       <a href="logout.php" class="btn btn-sm btn-danger">Sair</a>
     </div>
