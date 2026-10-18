@@ -2,7 +2,7 @@
 require_once '../includes/auth.php';
 require_once '../includes/db.php';
 require_once '../includes/csrf.php';
-require_once '../includes/preview.php';
+require_once '../includes/funcoes.php';
 
 $id = (int)($_GET['id'] ?? 0);
 $stmt = $pdo->prepare("SELECT * FROM projetos WHERE id = ?");
@@ -22,13 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Pedido inválido.');
     }
 
-    $p['titulo']          = trim($_POST['titulo'] ?? '');
-    $p['descricao']       = trim($_POST['descricao'] ?? '');
-    $p['tecnologias']     = trim($_POST['tecnologias'] ?? '');
-    $p['link_github']     = trim($_POST['link_github'] ?? '');
-    $p['link_demo']       = trim($_POST['link_demo'] ?? '');
-    $p['destaque']        = isset($_POST['destaque']) ? 1 : 0;
-    $p['mostrar_preview'] = isset($_POST['mostrar_preview']) ? 1 : 0;
+    $p['titulo']      = trim($_POST['titulo'] ?? '');
+    $p['descricao']   = trim($_POST['descricao'] ?? '');
+    $p['tecnologias'] = trim($_POST['tecnologias'] ?? '');
+    $p['link_github'] = trim($_POST['link_github'] ?? '');
+    $p['link_demo']   = trim($_POST['link_demo'] ?? '');
+    $p['destaque']    = isset($_POST['destaque']) ? 1 : 0;
 
     if ($p['titulo'] === '' || mb_strlen($p['titulo']) > 150) {
         $erros[] = 'O título é obrigatório (máx. 150 caracteres).';
@@ -45,12 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$erros) {
         $stmt = $pdo->prepare(
             "UPDATE projetos SET titulo=?, descricao=?, tecnologias=?, link_github=?,
-                    link_demo=?, destaque=?, mostrar_preview=? WHERE id=?"
+                    link_demo=?, destaque=? WHERE id=?"
         );
         $stmt->execute([
             $p['titulo'], $p['descricao'], $p['tecnologias'],
             $p['link_github'] ?: null, $p['link_demo'] ?: null,
-            $p['destaque'], $p['mostrar_preview'], $id,
+            $p['destaque'], $id,
         ]);
 
         header('Location: dashboard.php');
@@ -103,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <label class="form-label">Tecnologias</label>
       <input type="text" name="tecnologias" class="form-control"
              value="<?= h($p['tecnologias'] ?? '') ?>">
+      <div class="form-text">Separadas por vírgulas.</div>
     </div>
 
     <div class="row">
@@ -115,17 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label class="form-label">Link do site online</label>
         <input type="url" name="link_demo" class="form-control"
                value="<?= h($p['link_demo'] ?? '') ?>">
-      </div>
-    </div>
-
-    <div class="form-check mb-2">
-      <input type="checkbox" name="mostrar_preview" id="mostrar_preview" class="form-check-input"
-             <?= $p['mostrar_preview'] ? 'checked' : '' ?>>
-      <label for="mostrar_preview" class="form-check-label">
-        Mostrar pré-visualização do site (iframe)
-      </label>
-      <div class="form-text">
-        Usa o link do site online. Desmarca se o site não aparecer, porque alguns sites não permitem ser incorporados.
       </div>
     </div>
 

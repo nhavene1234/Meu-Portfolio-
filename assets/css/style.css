@@ -162,105 +162,14 @@ a.cartao-contacto:hover {
 .tech-mini small {
   font-weight: 600;
   font-size: 0.8rem;
-}
-/* Pré-visualização dos projetos (cartões) */
-.preview-caixa {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 10;
-  background: #e9ecef;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.preview-caixa iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1280px;
-  height: 800px;
+}/* Cartões de projetos (só texto e links) */
+.card-projeto {
   border: 0;
-  background: #fff;
-  transform-origin: 0 0;
-  transform: scale(0.3);
-  pointer-events: none;      /* o clique vai para o link do cartão */
+  border-top: 4px solid var(--cor-destaque);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.sem-preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 16 / 10;
-  background: linear-gradient(135deg, #212529, #343a40);
-  color: #ffc107;
-  font-size: 3rem;
-}
-/* Pré-visualização dos projetos (cartões) */
-.preview-caixa {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 10;
-  background: #e9ecef;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.preview-caixa iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 400%;               /* desenhado 4x maior... */
-  height: 400%;
-  border: 0;
-  background: #fff;
-  transform: scale(0.25);    /* ...e encolhido para caber na caixa */
-  transform-origin: 0 0;
-  pointer-events: none;      /* o clique vai para o link do cartão */
-}
-
-.sem-preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 16 / 10;
-  background: linear-gradient(135deg, #212529, #343a40);
-  color: #ffc107;
-  font-size: 3rem;
-}
-
-/* Pré-visualização grande (página do projeto) */
-.preview-janela {
-  border: 1px solid #dee2e6;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-}
-
-.preview-barra {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #f1f3f5;
-  border-bottom: 1px solid #dee2e6;
-  font-size: 0.85rem;
-}
-
-.preview-barra .ponto {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex: none;
-}
-
-.preview-url {
-  max-width: 50%;
-  color: #6c757d;
-}
-
-.preview-janela iframe {
-  display: block;
-  width: 100%;
-  height: clamp(520px, 80vh, 900px);   /* mais alto que antes */
-  border: 0;
-  background: #fff;
+.card-projeto:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
 }

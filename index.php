@@ -3,11 +3,11 @@ $titulo = 'Início';
 require_once 'includes/db.php';
 require_once 'includes/dados.php';
 require_once 'includes/perfil.php';
-require_once 'includes/preview.php';
+require_once 'includes/funcoes.php';
 require_once 'includes/header.php';
 
 // Projetos em destaque (até 3) e número total de projetos
-$destaques = $pdo->query("SELECT id, titulo, descricao, tecnologias, imagem, link_demo, mostrar_preview
+$destaques = $pdo->query("SELECT id, titulo, descricao, tecnologias, link_github, link_demo
                           FROM projetos WHERE destaque = 1
                           ORDER BY criado_em DESC LIMIT 3")->fetchAll();
 $totalProjetos = (int)$pdo->query("SELECT COUNT(*) FROM projetos")->fetchColumn();
@@ -48,7 +48,9 @@ $temCv = file_exists(__DIR__ . '/' . $cvCaminho);
       </div>
 
       <div class="col-lg-5 order-1 order-lg-2 text-center">
-        <img src="<?= SITE_URL ?>/assets/img/perfil.jpeg" alt="Nelson Nhavene" class="foto-perfil foto-perfil-pequena">
+        <img src="<?= SITE_URL ?>/assets/img/perfil.jpg"
+             alt="Foto de perfil de Nelson Nhavene"
+             class="foto-perfil">
       </div>
 
     </div>
@@ -122,21 +124,7 @@ $temCv = file_exists(__DIR__ . '/' . $cvCaminho);
     <h2 class="text-center fw-bold mb-4">Projetos em destaque</h2>
     <div class="row g-4">
       <?php foreach ($destaques as $p): ?>
-        <div class="col-md-6 col-lg-4">
-          <div class="card card-projeto h-100 shadow-sm">
-            <a href="projeto.php?id=<?= (int)$p['id'] ?>" class="d-block" tabindex="-1">
-              <?= miniatura_projeto($p) ?>
-            </a>
-            <div class="card-body">
-              <h5 class="card-title"><?= h($p['titulo']) ?></h5>
-              <p class="card-text"><?= h(mb_strimwidth($p['descricao'], 0, 110, '...')) ?></p>
-              <small class="text-muted"><?= h($p['tecnologias'] ?? '') ?></small>
-            </div>
-            <div class="card-footer bg-transparent border-0 pb-3">
-              <a href="projeto.php?id=<?= (int)$p['id'] ?>" class="btn btn-sm btn-outline-primary">Ver detalhes</a>
-            </div>
-          </div>
-        </div>
+        <?= cartao_projeto($p, 110) ?>
       <?php endforeach; ?>
     </div>
     <div class="text-center mt-4">

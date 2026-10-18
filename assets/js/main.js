@@ -1,1 +1,0 @@
-// Reservado para scripts futuros do site.

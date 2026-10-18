@@ -2,11 +2,11 @@
 require_once '../includes/auth.php';
 require_once '../includes/db.php';
 require_once '../includes/csrf.php';
-require_once '../includes/preview.php';
+require_once '../includes/funcoes.php';
 
 $erros = [];
 $dados = ['titulo' => '', 'descricao' => '', 'tecnologias' => '',
-          'link_github' => '', 'link_demo' => '', 'destaque' => 0, 'mostrar_preview' => 1];
+          'link_github' => '', 'link_demo' => '', 'destaque' => 0];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -14,13 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Pedido inválido.');
     }
 
-    $dados['titulo']          = trim($_POST['titulo'] ?? '');
-    $dados['descricao']       = trim($_POST['descricao'] ?? '');
-    $dados['tecnologias']     = trim($_POST['tecnologias'] ?? '');
-    $dados['link_github']     = trim($_POST['link_github'] ?? '');
-    $dados['link_demo']       = trim($_POST['link_demo'] ?? '');
-    $dados['destaque']        = isset($_POST['destaque']) ? 1 : 0;
-    $dados['mostrar_preview'] = isset($_POST['mostrar_preview']) ? 1 : 0;
+    $dados['titulo']      = trim($_POST['titulo'] ?? '');
+    $dados['descricao']   = trim($_POST['descricao'] ?? '');
+    $dados['tecnologias'] = trim($_POST['tecnologias'] ?? '');
+    $dados['link_github'] = trim($_POST['link_github'] ?? '');
+    $dados['link_demo']   = trim($_POST['link_demo'] ?? '');
+    $dados['destaque']    = isset($_POST['destaque']) ? 1 : 0;
 
     if ($dados['titulo'] === '' || mb_strlen($dados['titulo']) > 150) {
         $erros[] = 'O título é obrigatório (máx. 150 caracteres).';
@@ -36,13 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$erros) {
         $stmt = $pdo->prepare(
-            "INSERT INTO projetos (titulo, descricao, tecnologias, link_github, link_demo, destaque, mostrar_preview)
-             VALUES (?, ?, ?, ?, ?, ?, ?)"
+            "INSERT INTO projetos (titulo, descricao, tecnologias, link_github, link_demo, destaque)
+             VALUES (?, ?, ?, ?, ?, ?)"
         );
         $stmt->execute([
             $dados['titulo'], $dados['descricao'], $dados['tecnologias'],
-            $dados['link_github'] ?: null, $dados['link_demo'] ?: null,
-            $dados['destaque'], $dados['mostrar_preview'],
+            $dados['link_github'] ?: null, $dados['link_demo'] ?: null, $dados['destaque'],
         ]);
 
         header('Location: dashboard.php');
@@ -95,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <label class="form-label">Tecnologias</label>
       <input type="text" name="tecnologias" class="form-control" placeholder="PHP, MySQL, Bootstrap"
              value="<?= h($dados['tecnologias']) ?>">
+      <div class="form-text">Separadas por vírgulas.</div>
     </div>
 
     <div class="row">
@@ -107,17 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label class="form-label">Link do site online</label>
         <input type="url" name="link_demo" class="form-control" placeholder="https://..."
                value="<?= h($dados['link_demo']) ?>">
-      </div>
-    </div>
-
-    <div class="form-check mb-2">
-      <input type="checkbox" name="mostrar_preview" id="mostrar_preview" class="form-check-input"
-             <?= $dados['mostrar_preview'] ? 'checked' : '' ?>>
-      <label for="mostrar_preview" class="form-check-label">
-        Mostrar pré-visualização do site (iframe)
-      </label>
-      <div class="form-text">
-        Usa o link do site online. Desmarca se o site não aparecer, porque alguns sites não permitem ser incorporados.
       </div>
     </div>
 
