@@ -11,7 +11,7 @@ $projetos = $pdo->query("SELECT id, titulo, descricao, tecnologias, link_github,
 <section class="py-5">
   <div class="container">
     <h1 class="fw-bold text-center mb-2">Os meus projetos</h1>
-    <p class="text-center text-muted mb-5">Aplicações web que desenvolvi, com o código e a versão online.</p>
+    <p class="text-center text-muted mb-5">Um pouco do que tenho construído: aplicações web feitas para serem simples de usar e fáceis de entender.</p>
 
     <div class="row g-4">
       <?php foreach ($projetos as $p): ?>
