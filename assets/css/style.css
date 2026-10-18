@@ -194,6 +194,37 @@ a.cartao-contacto:hover {
   color: #ffc107;
   font-size: 3rem;
 }
+/* Pré-visualização dos projetos (cartões) */
+.preview-caixa {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: #e9ecef;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.preview-caixa iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400%;               /* desenhado 4x maior... */
+  height: 400%;
+  border: 0;
+  background: #fff;
+  transform: scale(0.25);    /* ...e encolhido para caber na caixa */
+  transform-origin: 0 0;
+  pointer-events: none;      /* o clique vai para o link do cartão */
+}
+
+.sem-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(135deg, #212529, #343a40);
+  color: #ffc107;
+  font-size: 3rem;
+}
 
 /* Pré-visualização grande (página do projeto) */
 .preview-janela {
@@ -229,8 +260,7 @@ a.cartao-contacto:hover {
 .preview-janela iframe {
   display: block;
   width: 100%;
-  height: 70vh;
-  min-height: 420px;
+  height: clamp(520px, 80vh, 900px);   /* mais alto que antes */
   border: 0;
   background: #fff;
 }

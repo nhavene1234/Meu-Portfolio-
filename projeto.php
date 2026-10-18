@@ -24,7 +24,7 @@ require_once 'includes/header.php';
 ?>
 
 <section class="py-5">
-  <div class="container" style="max-width: 1000px;">
+  <div class="container" style="max-width: 1200px;">
     <a href="projetos.php" class="text-decoration-none">← Todos os projetos</a>
 
     <h1 class="fw-bold mt-3"><?= h($p['titulo']) ?></h1>

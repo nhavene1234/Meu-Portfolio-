@@ -48,9 +48,7 @@ $temCv = file_exists(__DIR__ . '/' . $cvCaminho);
       </div>
 
       <div class="col-lg-5 order-1 order-lg-2 text-center">
-        <img src="<?= SITE_URL ?>/assets/img/perfil.jpg"
-             alt="Foto de perfil de Nelson Nhavene"
-             class="foto-perfil">
+        <img src="<?= SITE_URL ?>/assets/img/perfil.jpeg" alt="Nelson Nhavene" class="foto-perfil foto-perfil-pequena">
       </div>
 
     </div>
