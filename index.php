@@ -3,10 +3,11 @@ $titulo = 'Início';
 require_once 'includes/db.php';
 require_once 'includes/dados.php';
 require_once 'includes/perfil.php';
+require_once 'includes/preview.php';
 require_once 'includes/header.php';
 
 // Projetos em destaque (até 3) e número total de projetos
-$destaques = $pdo->query("SELECT id, titulo, descricao, tecnologias, imagem
+$destaques = $pdo->query("SELECT id, titulo, descricao, tecnologias, imagem, link_demo, mostrar_preview
                           FROM projetos WHERE destaque = 1
                           ORDER BY criado_em DESC LIMIT 3")->fetchAll();
 $totalProjetos = (int)$pdo->query("SELECT COUNT(*) FROM projetos")->fetchColumn();
@@ -47,7 +48,7 @@ $temCv = file_exists(__DIR__ . '/' . $cvCaminho);
       </div>
 
       <div class="col-lg-5 order-1 order-lg-2 text-center">
-        <img src="<?= SITE_URL ?>/assets/img/perfil.jpeg"
+        <img src="<?= SITE_URL ?>/assets/img/perfil.jpg"
              alt="Foto de perfil de Nelson Nhavene"
              class="foto-perfil">
       </div>
@@ -88,8 +89,8 @@ $temCv = file_exists(__DIR__ . '/' . $cvCaminho);
           <div class="card h-100 shadow-sm border-0 text-center">
             <div class="card-body p-4">
               <i class="bi <?= $icone ?> fs-1 text-primary"></i>
-              <h3 class="h5 fw-bold mt-2"><?= htmlspecialchars($tituloServico) ?></h3>
-              <p class="text-muted mb-0"><?= htmlspecialchars($textoServico) ?></p>
+              <h3 class="h5 fw-bold mt-2"><?= h($tituloServico) ?></h3>
+              <p class="text-muted mb-0"><?= h($textoServico) ?></p>
             </div>
           </div>
         </div>
@@ -105,9 +106,9 @@ $temCv = file_exists(__DIR__ . '/' . $cvCaminho);
     <div class="d-flex flex-wrap justify-content-center gap-4 mb-4">
       <?php foreach ($todasTecnologias as [$nome, $icone]): ?>
         <?php if ($icone): ?>
-          <span class="tech-mini" title="<?= htmlspecialchars($nome) ?>">
-            <i class="<?= htmlspecialchars($icone) ?>"></i>
-            <small><?= htmlspecialchars($nome) ?></small>
+          <span class="tech-mini" title="<?= h($nome) ?>">
+            <i class="<?= h($icone) ?>"></i>
+            <small><?= h($nome) ?></small>
           </span>
         <?php endif; ?>
       <?php endforeach; ?>
@@ -125,13 +126,13 @@ $temCv = file_exists(__DIR__ . '/' . $cvCaminho);
       <?php foreach ($destaques as $p): ?>
         <div class="col-md-6 col-lg-4">
           <div class="card card-projeto h-100 shadow-sm">
-            <?php if ($p['imagem']): ?>
-              <img src="<?= SITE_URL ?>/uploads/<?= htmlspecialchars($p['imagem']) ?>" class="card-img-top" alt="">
-            <?php endif; ?>
+            <a href="projeto.php?id=<?= (int)$p['id'] ?>" class="d-block" tabindex="-1">
+              <?= miniatura_projeto($p) ?>
+            </a>
             <div class="card-body">
-              <h5 class="card-title"><?= htmlspecialchars($p['titulo']) ?></h5>
-              <p class="card-text"><?= htmlspecialchars(mb_strimwidth($p['descricao'], 0, 110, '...')) ?></p>
-              <small class="text-muted"><?= htmlspecialchars($p['tecnologias'] ?? '') ?></small>
+              <h5 class="card-title"><?= h($p['titulo']) ?></h5>
+              <p class="card-text"><?= h(mb_strimwidth($p['descricao'], 0, 110, '...')) ?></p>
+              <small class="text-muted"><?= h($p['tecnologias'] ?? '') ?></small>
             </div>
             <div class="card-footer bg-transparent border-0 pb-3">
               <a href="projeto.php?id=<?= (int)$p['id'] ?>" class="btn btn-sm btn-outline-primary">Ver detalhes</a>

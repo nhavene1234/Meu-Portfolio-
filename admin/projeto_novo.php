@@ -2,10 +2,11 @@
 require_once '../includes/auth.php';
 require_once '../includes/db.php';
 require_once '../includes/csrf.php';
+require_once '../includes/preview.php';
 
 $erros = [];
 $dados = ['titulo' => '', 'descricao' => '', 'tecnologias' => '',
-          'link_github' => '', 'link_demo' => '', 'destaque' => 0];
+          'link_github' => '', 'link_demo' => '', 'destaque' => 0, 'mostrar_preview' => 1];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -13,69 +14,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Pedido inválido.');
     }
 
-    $dados['titulo']      = trim($_POST['titulo'] ?? '');
-    $dados['descricao']   = trim($_POST['descricao'] ?? '');
-    $dados['tecnologias'] = trim($_POST['tecnologias'] ?? '');
-    $dados['link_github'] = trim($_POST['link_github'] ?? '');
-    $dados['link_demo']   = trim($_POST['link_demo'] ?? '');
-    $dados['destaque']    = isset($_POST['destaque']) ? 1 : 0;
+    $dados['titulo']          = trim($_POST['titulo'] ?? '');
+    $dados['descricao']       = trim($_POST['descricao'] ?? '');
+    $dados['tecnologias']     = trim($_POST['tecnologias'] ?? '');
+    $dados['link_github']     = trim($_POST['link_github'] ?? '');
+    $dados['link_demo']       = trim($_POST['link_demo'] ?? '');
+    $dados['destaque']        = isset($_POST['destaque']) ? 1 : 0;
+    $dados['mostrar_preview'] = isset($_POST['mostrar_preview']) ? 1 : 0;
 
-    // Validações de texto
     if ($dados['titulo'] === '' || mb_strlen($dados['titulo']) > 150) {
         $erros[] = 'O título é obrigatório (máx. 150 caracteres).';
     }
     if ($dados['descricao'] === '') {
         $erros[] = 'A descrição é obrigatória.';
     }
-    foreach (['link_github', 'link_demo'] as $campo) {
-        if ($dados[$campo] !== '' && !filter_var($dados[$campo], FILTER_VALIDATE_URL)) {
-            $erros[] = 'O link "' . $campo . '" não é um URL válido.';
+    foreach (['link_github' => 'GitHub', 'link_demo' => 'do site online'] as $campo => $nome) {
+        if ($dados[$campo] !== '' && !url_http($dados[$campo])) {
+            $erros[] = "O link $nome tem de começar por http:// ou https://.";
         }
     }
 
-    // Upload da imagem (opcional)
-    $nomeImagem = null;
-
-    if (!empty($_FILES['imagem']['name'])) {
-        $f = $_FILES['imagem'];
-
-        if ($f['error'] !== UPLOAD_ERR_OK) {
-            $erros[] = 'Falha no envio da imagem.';
-        } elseif ($f['size'] > 2 * 1024 * 1024) {
-            $erros[] = 'A imagem não pode ter mais de 2 MB.';
-        } else {
-            // Verifica o tipo REAL do ficheiro, não só a extensão
-            $finfo = new finfo(FILEINFO_MIME_TYPE);
-            $mime  = $finfo->file($f['tmp_name']);
-            $permitidos = [
-                'image/jpeg' => 'jpg',
-                'image/png'  => 'png',
-                'image/webp' => 'webp',
-            ];
-
-            if (!isset($permitidos[$mime]) || !getimagesize($f['tmp_name'])) {
-                $erros[] = 'Só são aceites imagens JPG, PNG ou WEBP.';
-            } else {
-                $nomeImagem = uniqid('proj_', true) . '.' . $permitidos[$mime];
-                $destino = __DIR__ . '/../uploads/' . $nomeImagem;
-
-                if (!move_uploaded_file($f['tmp_name'], $destino)) {
-                    $erros[] = 'Não foi possível guardar a imagem.';
-                    $nomeImagem = null;
-                }
-            }
-        }
-    }
-
-    // Guardar na base de dados
     if (!$erros) {
         $stmt = $pdo->prepare(
-            "INSERT INTO projetos (titulo, descricao, tecnologias, imagem, link_github, link_demo, destaque)
+            "INSERT INTO projetos (titulo, descricao, tecnologias, link_github, link_demo, destaque, mostrar_preview)
              VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
         $stmt->execute([
-            $dados['titulo'], $dados['descricao'], $dados['tecnologias'], $nomeImagem,
-            $dados['link_github'] ?: null, $dados['link_demo'] ?: null, $dados['destaque'],
+            $dados['titulo'], $dados['descricao'], $dados['tecnologias'],
+            $dados['link_github'] ?: null, $dados['link_demo'] ?: null,
+            $dados['destaque'], $dados['mostrar_preview'],
         ]);
 
         header('Location: dashboard.php');
@@ -105,47 +72,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php if ($erros): ?>
     <div class="alert alert-danger">
       <ul class="mb-0">
-        <?php foreach ($erros as $e): ?><li><?= htmlspecialchars($e) ?></li><?php endforeach; ?>
+        <?php foreach ($erros as $e): ?><li><?= h($e) ?></li><?php endforeach; ?>
       </ul>
     </div>
   <?php endif; ?>
 
-  <form method="post" enctype="multipart/form-data" class="card shadow-sm p-4">
+  <form method="post" class="card shadow-sm p-4">
     <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
 
     <div class="mb-3">
       <label class="form-label">Título *</label>
       <input type="text" name="titulo" class="form-control" maxlength="150"
-             value="<?= htmlspecialchars($dados['titulo']) ?>" required>
+             value="<?= h($dados['titulo']) ?>" required>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Descrição *</label>
-      <textarea name="descricao" rows="5" class="form-control" required><?= htmlspecialchars($dados['descricao']) ?></textarea>
+      <textarea name="descricao" rows="5" class="form-control" required><?= h($dados['descricao']) ?></textarea>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Tecnologias</label>
       <input type="text" name="tecnologias" class="form-control" placeholder="PHP, MySQL, Bootstrap"
-             value="<?= htmlspecialchars($dados['tecnologias']) ?>">
+             value="<?= h($dados['tecnologias']) ?>">
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Link do GitHub</label>
         <input type="url" name="link_github" class="form-control" placeholder="https://github.com/..."
-               value="<?= htmlspecialchars($dados['link_github']) ?>">
+               value="<?= h($dados['link_github']) ?>">
       </div>
       <div class="col-md-6 mb-3">
-        <label class="form-label">Link da demo</label>
+        <label class="form-label">Link do site online</label>
         <input type="url" name="link_demo" class="form-control" placeholder="https://..."
-               value="<?= htmlspecialchars($dados['link_demo']) ?>">
+               value="<?= h($dados['link_demo']) ?>">
       </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Imagem do projeto (JPG, PNG ou WEBP, até 2 MB)</label>
-      <input type="file" name="imagem" class="form-control" accept="image/jpeg,image/png,image/webp">
+    <div class="form-check mb-2">
+      <input type="checkbox" name="mostrar_preview" id="mostrar_preview" class="form-check-input"
+             <?= $dados['mostrar_preview'] ? 'checked' : '' ?>>
+      <label for="mostrar_preview" class="form-check-label">
+        Mostrar pré-visualização do site (iframe)
+      </label>
+      <div class="form-text">
+        Usa o link do site online. Desmarca se o site não aparecer, porque alguns sites não permitem ser incorporados.
+      </div>
     </div>
 
     <div class="form-check mb-4">

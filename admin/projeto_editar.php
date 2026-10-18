@@ -2,7 +2,7 @@
 require_once '../includes/auth.php';
 require_once '../includes/db.php';
 require_once '../includes/csrf.php';
-require_once '../includes/upload.php';
+require_once '../includes/preview.php';
 
 $id = (int)($_GET['id'] ?? 0);
 $stmt = $pdo->prepare("SELECT * FROM projetos WHERE id = ?");
@@ -22,12 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Pedido inválido.');
     }
 
-    $p['titulo']      = trim($_POST['titulo'] ?? '');
-    $p['descricao']   = trim($_POST['descricao'] ?? '');
-    $p['tecnologias'] = trim($_POST['tecnologias'] ?? '');
-    $p['link_github'] = trim($_POST['link_github'] ?? '');
-    $p['link_demo']   = trim($_POST['link_demo'] ?? '');
-    $p['destaque']    = isset($_POST['destaque']) ? 1 : 0;
+    $p['titulo']          = trim($_POST['titulo'] ?? '');
+    $p['descricao']       = trim($_POST['descricao'] ?? '');
+    $p['tecnologias']     = trim($_POST['tecnologias'] ?? '');
+    $p['link_github']     = trim($_POST['link_github'] ?? '');
+    $p['link_demo']       = trim($_POST['link_demo'] ?? '');
+    $p['destaque']        = isset($_POST['destaque']) ? 1 : 0;
+    $p['mostrar_preview'] = isset($_POST['mostrar_preview']) ? 1 : 0;
 
     if ($p['titulo'] === '' || mb_strlen($p['titulo']) > 150) {
         $erros[] = 'O título é obrigatório (máx. 150 caracteres).';
@@ -35,36 +36,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($p['descricao'] === '') {
         $erros[] = 'A descrição é obrigatória.';
     }
-    foreach (['link_github', 'link_demo'] as $campo) {
-        if ($p[$campo] !== '' && !filter_var($p[$campo], FILTER_VALIDATE_URL)) {
-            $erros[] = 'O link "' . $campo . '" não é um URL válido.';
+    foreach (['link_github' => 'GitHub', 'link_demo' => 'do site online'] as $campo => $nome) {
+        if ($p[$campo] !== '' && !url_http($p[$campo])) {
+            $erros[] = "O link $nome tem de começar por http:// ou https://.";
         }
-    }
-
-    // Nova imagem (opcional): se enviada, substitui a antiga
-    $imagemAntiga = $_POST['imagem_atual'] ?? null;
-    $novaImagem = null;
-
-    if (!$erros && !empty($_FILES['imagem']['name'])) {
-        [$novaImagem, $erroImg] = guardar_imagem($_FILES['imagem']);
-        if ($erroImg) $erros[] = $erroImg;
     }
 
     if (!$erros) {
-        $imagemFinal = $novaImagem ?? $imagemAntiga;
-
         $stmt = $pdo->prepare(
-            "UPDATE projetos SET titulo=?, descricao=?, tecnologias=?, imagem=?,
-                    link_github=?, link_demo=?, destaque=? WHERE id=?"
+            "UPDATE projetos SET titulo=?, descricao=?, tecnologias=?, link_github=?,
+                    link_demo=?, destaque=?, mostrar_preview=? WHERE id=?"
         );
         $stmt->execute([
-            $p['titulo'], $p['descricao'], $p['tecnologias'], $imagemFinal,
-            $p['link_github'] ?: null, $p['link_demo'] ?: null, $p['destaque'], $id,
+            $p['titulo'], $p['descricao'], $p['tecnologias'],
+            $p['link_github'] ?: null, $p['link_demo'] ?: null,
+            $p['destaque'], $p['mostrar_preview'], $id,
         ]);
-
-        if ($novaImagem) {
-            apagar_imagem($imagemAntiga);   // remove a imagem substituída
-        }
 
         header('Location: dashboard.php');
         exit;
@@ -93,55 +80,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php if ($erros): ?>
     <div class="alert alert-danger">
       <ul class="mb-0">
-        <?php foreach ($erros as $e): ?><li><?= htmlspecialchars($e) ?></li><?php endforeach; ?>
+        <?php foreach ($erros as $e): ?><li><?= h($e) ?></li><?php endforeach; ?>
       </ul>
     </div>
   <?php endif; ?>
 
-  <form method="post" enctype="multipart/form-data" class="card shadow-sm p-4">
+  <form method="post" class="card shadow-sm p-4">
     <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
-    <input type="hidden" name="imagem_atual" value="<?= htmlspecialchars($p['imagem'] ?? '') ?>">
 
     <div class="mb-3">
       <label class="form-label">Título *</label>
       <input type="text" name="titulo" class="form-control" maxlength="150"
-             value="<?= htmlspecialchars($p['titulo']) ?>" required>
+             value="<?= h($p['titulo']) ?>" required>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Descrição *</label>
-      <textarea name="descricao" rows="5" class="form-control" required><?= htmlspecialchars($p['descricao']) ?></textarea>
+      <textarea name="descricao" rows="5" class="form-control" required><?= h($p['descricao']) ?></textarea>
     </div>
 
     <div class="mb-3">
       <label class="form-label">Tecnologias</label>
       <input type="text" name="tecnologias" class="form-control"
-             value="<?= htmlspecialchars($p['tecnologias'] ?? '') ?>">
+             value="<?= h($p['tecnologias'] ?? '') ?>">
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Link do GitHub</label>
         <input type="url" name="link_github" class="form-control"
-               value="<?= htmlspecialchars($p['link_github'] ?? '') ?>">
+               value="<?= h($p['link_github'] ?? '') ?>">
       </div>
       <div class="col-md-6 mb-3">
-        <label class="form-label">Link da demo</label>
+        <label class="form-label">Link do site online</label>
         <input type="url" name="link_demo" class="form-control"
-               value="<?= htmlspecialchars($p['link_demo'] ?? '') ?>">
+               value="<?= h($p['link_demo'] ?? '') ?>">
       </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Imagem</label>
-      <?php if ($p['imagem']): ?>
-        <div class="mb-2">
-          <img src="<?= SITE_URL ?>/uploads/<?= htmlspecialchars($p['imagem']) ?>"
-               alt="Imagem atual" style="max-height: 120px;" class="rounded border">
-        </div>
-      <?php endif; ?>
-      <input type="file" name="imagem" class="form-control" accept="image/jpeg,image/png,image/webp">
-      <div class="form-text">Deixa vazio para manter a imagem atual.</div>
+    <div class="form-check mb-2">
+      <input type="checkbox" name="mostrar_preview" id="mostrar_preview" class="form-check-input"
+             <?= $p['mostrar_preview'] ? 'checked' : '' ?>>
+      <label for="mostrar_preview" class="form-check-label">
+        Mostrar pré-visualização do site (iframe)
+      </label>
+      <div class="form-text">
+        Usa o link do site online. Desmarca se o site não aparecer, porque alguns sites não permitem ser incorporados.
+      </div>
     </div>
 
     <div class="form-check mb-4">

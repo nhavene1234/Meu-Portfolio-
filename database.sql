@@ -50,6 +50,7 @@ CREATE TABLE `projetos` (
   `link_github` varchar(255) DEFAULT NULL,
   `link_demo` varchar(255) DEFAULT NULL,
   `destaque` tinyint(1) DEFAULT 0,
+    mostrar_preview TINYINT(1) NOT NULL DEFAULT 1,
   `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
