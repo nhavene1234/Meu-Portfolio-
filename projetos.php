@@ -29,15 +29,7 @@ if ($filtro !== '') {
       e espreita o código no GitHub.
     </p>
 
-    <!-- Filtros -->
-    <div class="d-flex flex-wrap justify-content-center gap-2 mb-5">
-      <a href="projetos.php"
-         class="btn btn-sm <?= $filtro === '' ? 'btn-dark' : 'btn-outline-dark' ?>">Todos</a>
-      <a href="projetos.php?estado=concluido"
-         class="btn btn-sm <?= $filtro === 'concluido' ? 'btn-dark' : 'btn-outline-dark' ?>">Concluídos</a>
-      <a href="projetos.php?estado=desenvolvimento"
-         class="btn btn-sm <?= $filtro === 'desenvolvimento' ? 'btn-dark' : 'btn-outline-dark' ?>">Em desenvolvimento</a>
-    </div>
+    
 
     <div class="row g-4">
       <?php foreach ($projetos as $p): ?>
