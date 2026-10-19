@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/config.php';
 
+// Estados possíveis de um projeto (chave guardada na BD => texto mostrado)
+const ESTADOS = [
+    'desenvolvimento' => 'Em desenvolvimento',
+    'concluido'       => 'Concluído',
+];
+
 function h(?string $texto): string {
     return htmlspecialchars((string)$texto, ENT_QUOTES, 'UTF-8');
 }
@@ -12,6 +18,18 @@ function url_http(?string $url): ?string {
         return $url;
     }
     return null;
+}
+
+// Devolve um estado válido (se vier algo estranho, assume "concluido")
+function estado_valido(?string $estado): string {
+    return array_key_exists((string)$estado, ESTADOS) ? $estado : 'concluido';
+}
+
+// Selo colorido do estado
+function selo_estado(?string $estado): string {
+    $estado = estado_valido($estado);
+    $classe = $estado === 'concluido' ? 'text-bg-success' : 'text-bg-warning';
+    return '<span class="badge ' . $classe . '">' . h(ESTADOS[$estado]) . '</span>';
 }
 
 // Cartão de um projeto (usado na página inicial e na lista de projetos)
@@ -42,6 +60,7 @@ function cartao_projeto(array $p, int $limite = 140): string {
     return '<div class="col-md-6 col-lg-4">'
          . '<div class="card card-projeto h-100 shadow-sm">'
          . '<div class="card-body">'
+         . '<div class="mb-2">' . selo_estado($p['estado'] ?? null) . '</div>'
          . '<h5 class="card-title">' . h($p['titulo']) . '</h5>'
          . '<p class="card-text">' . h(mb_strimwidth($p['descricao'], 0, $limite, '...')) . '</p>'
          . $etiquetas

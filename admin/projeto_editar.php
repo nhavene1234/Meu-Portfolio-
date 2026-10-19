@@ -14,6 +14,7 @@ if (!$p) {
     exit;
 }
 
+$p['estado'] = estado_valido($p['estado'] ?? null);
 $erros = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,12 +29,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $p['link_github'] = trim($_POST['link_github'] ?? '');
     $p['link_demo']   = trim($_POST['link_demo'] ?? '');
     $p['destaque']    = isset($_POST['destaque']) ? 1 : 0;
+    $p['estado']      = $_POST['estado'] ?? '';
 
     if ($p['titulo'] === '' || mb_strlen($p['titulo']) > 150) {
         $erros[] = 'O título é obrigatório (máx. 150 caracteres).';
     }
     if ($p['descricao'] === '') {
         $erros[] = 'A descrição é obrigatória.';
+    }
+    if (!array_key_exists($p['estado'], ESTADOS)) {
+        $erros[] = 'Escolhe o estado do projeto.';
     }
     foreach (['link_github' => 'GitHub', 'link_demo' => 'do site online'] as $campo => $nome) {
         if ($p[$campo] !== '' && !url_http($p[$campo])) {
@@ -44,12 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$erros) {
         $stmt = $pdo->prepare(
             "UPDATE projetos SET titulo=?, descricao=?, tecnologias=?, link_github=?,
-                    link_demo=?, destaque=? WHERE id=?"
+                    link_demo=?, destaque=?, estado=? WHERE id=?"
         );
         $stmt->execute([
             $p['titulo'], $p['descricao'], $p['tecnologias'],
             $p['link_github'] ?: null, $p['link_demo'] ?: null,
-            $p['destaque'], $id,
+            $p['destaque'], $p['estado'], $id,
         ]);
 
         header('Location: dashboard.php');
@@ -96,6 +101,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="mb-3">
       <label class="form-label">Descrição *</label>
       <textarea name="descricao" rows="5" class="form-control" required><?= h($p['descricao']) ?></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Estado do projeto *</label>
+      <select name="estado" class="form-select" required>
+        <?php foreach (ESTADOS as $valor => $nome): ?>
+          <option value="<?= h($valor) ?>" <?= $p['estado'] === $valor ? 'selected' : '' ?>>
+            <?= h($nome) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
     </div>
 
     <div class="mb-3">

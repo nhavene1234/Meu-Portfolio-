@@ -2,8 +2,9 @@
 require_once '../includes/auth.php';
 require_once '../includes/db.php';
 require_once '../includes/csrf.php';
+require_once '../includes/funcoes.php';
 
-$projetos = $pdo->query("SELECT id, titulo, tecnologias, destaque, criado_em
+$projetos = $pdo->query("SELECT id, titulo, tecnologias, destaque, estado, criado_em
                          FROM projetos ORDER BY criado_em DESC")->fetchAll();
 
 $naoLidas = (int)$pdo->query("SELECT COUNT(*) FROM mensagens WHERE lida = 0")->fetchColumn();
@@ -20,7 +21,7 @@ $naoLidas = (int)$pdo->query("SELECT COUNT(*) FROM mensagens WHERE lida = 0")->f
 
 <nav class="navbar navbar-dark bg-dark">
   <div class="container">
-    <span class="navbar-brand">Painel · <?= htmlspecialchars($_SESSION['admin_nome']) ?></span>
+    <span class="navbar-brand">Painel · <?= h($_SESSION['admin_nome']) ?></span>
     <div class="d-flex flex-wrap gap-2">
       <a href="mensagens.php" class="btn btn-sm btn-outline-light position-relative">
         Mensagens
@@ -46,6 +47,7 @@ $naoLidas = (int)$pdo->query("SELECT COUNT(*) FROM mensagens WHERE lida = 0")->f
         <thead class="table-light">
           <tr>
             <th>Título</th>
+            <th>Estado</th>
             <th>Tecnologias</th>
             <th>Destaque</th>
             <th>Data</th>
@@ -55,8 +57,9 @@ $naoLidas = (int)$pdo->query("SELECT COUNT(*) FROM mensagens WHERE lida = 0")->f
         <tbody>
           <?php foreach ($projetos as $p): ?>
             <tr>
-              <td><?= htmlspecialchars($p['titulo']) ?></td>
-              <td><?= htmlspecialchars($p['tecnologias'] ?? '') ?></td>
+              <td><?= h($p['titulo']) ?></td>
+              <td><?= selo_estado($p['estado'] ?? null) ?></td>
+              <td><?= h($p['tecnologias'] ?? '') ?></td>
               <td><?= $p['destaque'] ? '⭐' : '' ?></td>
               <td><?= date('d/m/Y', strtotime($p['criado_em'])) ?></td>
               <td class="text-end">
@@ -75,7 +78,7 @@ $naoLidas = (int)$pdo->query("SELECT COUNT(*) FROM mensagens WHERE lida = 0")->f
 
           <?php if (!$projetos): ?>
             <tr>
-              <td colspan="5" class="text-center text-muted py-4">
+              <td colspan="6" class="text-center text-muted py-4">
                 Ainda não tens projetos. Adiciona o primeiro!
               </td>
             </tr>

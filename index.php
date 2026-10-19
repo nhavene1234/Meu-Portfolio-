@@ -7,7 +7,7 @@ require_once 'includes/funcoes.php';
 require_once 'includes/header.php';
 
 // Projetos em destaque (até 3) e número total de projetos
-$destaques = $pdo->query("SELECT id, titulo, descricao, tecnologias, link_github, link_demo
+$destaques = $pdo->query("SELECT id, titulo, descricao, tecnologias, estado, link_github, link_demo
                           FROM projetos WHERE destaque = 1
                           ORDER BY criado_em DESC LIMIT 3")->fetchAll();
 $totalProjetos = (int)$pdo->query("SELECT COUNT(*) FROM projetos")->fetchColumn();

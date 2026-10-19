@@ -27,7 +27,8 @@ require_once 'includes/header.php';
   <div class="container" style="max-width: 900px;">
     <a href="projetos.php" class="text-decoration-none">← Todos os projetos</a>
 
-    <h1 class="fw-bold mt-3"><?= h($p['titulo']) ?></h1>
+    <div class="mt-3 mb-2"><?= selo_estado($p['estado'] ?? null) ?></div>
+    <h1 class="fw-bold"><?= h($p['titulo']) ?></h1>
 
     <?php if ($p['tecnologias']): ?>
       <div class="mb-4">

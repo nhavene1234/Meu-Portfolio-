@@ -6,7 +6,7 @@ require_once '../includes/funcoes.php';
 
 $erros = [];
 $dados = ['titulo' => '', 'descricao' => '', 'tecnologias' => '',
-          'link_github' => '', 'link_demo' => '', 'destaque' => 0];
+          'link_github' => '', 'link_demo' => '', 'destaque' => 0, 'estado' => 'concluido'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -20,12 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dados['link_github'] = trim($_POST['link_github'] ?? '');
     $dados['link_demo']   = trim($_POST['link_demo'] ?? '');
     $dados['destaque']    = isset($_POST['destaque']) ? 1 : 0;
+    $dados['estado']      = $_POST['estado'] ?? '';
 
     if ($dados['titulo'] === '' || mb_strlen($dados['titulo']) > 150) {
         $erros[] = 'O título é obrigatório (máx. 150 caracteres).';
     }
     if ($dados['descricao'] === '') {
         $erros[] = 'A descrição é obrigatória.';
+    }
+    if (!array_key_exists($dados['estado'], ESTADOS)) {
+        $erros[] = 'Escolhe o estado do projeto.';
     }
     foreach (['link_github' => 'GitHub', 'link_demo' => 'do site online'] as $campo => $nome) {
         if ($dados[$campo] !== '' && !url_http($dados[$campo])) {
@@ -35,12 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$erros) {
         $stmt = $pdo->prepare(
-            "INSERT INTO projetos (titulo, descricao, tecnologias, link_github, link_demo, destaque)
-             VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO projetos (titulo, descricao, tecnologias, link_github, link_demo, destaque, estado)
+             VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
         $stmt->execute([
             $dados['titulo'], $dados['descricao'], $dados['tecnologias'],
-            $dados['link_github'] ?: null, $dados['link_demo'] ?: null, $dados['destaque'],
+            $dados['link_github'] ?: null, $dados['link_demo'] ?: null,
+            $dados['destaque'], $dados['estado'],
         ]);
 
         header('Location: dashboard.php');
@@ -87,6 +92,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="mb-3">
       <label class="form-label">Descrição *</label>
       <textarea name="descricao" rows="5" class="form-control" required><?= h($dados['descricao']) ?></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Estado do projeto *</label>
+      <select name="estado" class="form-select" required>
+        <?php foreach (ESTADOS as $valor => $nome): ?>
+          <option value="<?= h($valor) ?>" <?= $dados['estado'] === $valor ? 'selected' : '' ?>>
+            <?= h($nome) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
     </div>
 
     <div class="mb-3">
