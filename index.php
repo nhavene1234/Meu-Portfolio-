@@ -39,6 +39,8 @@ $temCv = file_exists(__DIR__ . '/' . $cvCaminho);
         <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start mt-4">
           <a href="projetos.php" class="btn btn-primary btn-lg">Ver projetos</a>
           <a href="contacto.php" class="btn btn-outline-primary btn-lg">Fala comigo</a>
+          <a href="https://github.com/nhavene1234" class="btn btn-secundario" target="_blank" rel="noopener noreferrer">GitHub</a>
+<a href="https://linkedin.com/in/nelson-nhavene-0a8a29304" class="btn btn-secundario" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <?php if ($temCv): ?>
             <a href="<?= $cvCaminho ?>" class="btn btn-outline-dark btn-lg" download>
               <i class="bi bi-download me-1"></i>CV
